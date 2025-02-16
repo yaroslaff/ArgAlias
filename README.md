@@ -1,6 +1,6 @@
 # ArgAlias
 
-[![Run tests and upload coverage](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml/badge.svg)](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml)
+[![Run tests and upload coverage](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml/badge.svg)](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/yaroslaff/ArgAlias/graph/badge.svg?token=3DUNW2SH81)](https://codecov.io/gh/yaroslaff/ArgAlias)
 
 
 Aliases for arguments in Python CLI utilities (supports argparse, Typer, Click, and similar tools).
