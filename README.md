@@ -7,6 +7,12 @@ You configure which *canonical* CLI arguments you expect, and what aliases are a
 
 If a canonical name is configured with a prefix, aliases will be resolved only if they follow configured prefix from the first argument.
 
+*Simplify your CLI! Add ArgAlias to your argparse, Click, or Typer project in 10 minutes!*
+
+## Installation
+
+`pip3 install argalias`
+
 ## How to use
 When you add aliases, the first element is either a `str` (the canonical name to which the alias will be resolved to) or a `List[str]` containing prefixes with canonical name.
 
