@@ -1,4 +1,4 @@
-from argalias import ArgAlias, ArgAliasSubstitution
+from argalias import ArgAlias, ArgAliasSubstitution, __version__
 import sys
 
 def test_repr():
@@ -7,11 +7,13 @@ def test_repr():
     assert aas_repr == "None show ('s', 'sh')"
 
 def test_argv():
+    argv_backup = sys.argv
     sys.argv = ['script.py', 'sh', 'something']    
     aa = ArgAlias()
     aa.alias('show', 'sh',)
     parsed = aa.parse()
     assert sys.argv == ['script.py', 'show', 'something']
+    sys.argv = argv_backup
 
 def test_anywhere():
     aa = ArgAlias()
@@ -108,3 +110,11 @@ def test_prefix_pipe():
     # must be applied once
     parsed  = aa.parse(['aaa', 'sh', 'hello', 'sh'])
     assert parsed == ['aaa', 'show','hello', 'sh']
+
+def test_useless():
+    # not really useful tests
+    # just to get higher coverate rate
+    assert len(__version__)
+    aa = ArgAlias()
+    parsed = aa.parse([])
+    assert parsed == []

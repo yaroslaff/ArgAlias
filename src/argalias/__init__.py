@@ -1,4 +1,5 @@
 from __future__ import annotations
+from .__about__ import __version__
 from typing import List, Tuple, Optional, Union
 import sys
 
@@ -102,7 +103,7 @@ class ArgAlias:
 
     def parse(self, args: Optional[List[str]] = None):
         argv_mode = False
-        if not args:
+        if args is None:
             argv_mode = True
             args = sys.argv[1:]
             position = 1
