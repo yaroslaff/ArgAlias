@@ -1,4 +1,8 @@
 # ArgAlias
+
+[![Run tests and upload coverage](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml/badge.svg)](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml)
+
+
 Aliases for arguments in Python CLI utilities (supports argparse, Typer, Click, and similar tools).
 
 This tool is for those who sometimes prefer to type `p sh X` instead of `project show X`.
