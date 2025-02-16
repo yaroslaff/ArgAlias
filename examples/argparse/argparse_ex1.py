@@ -28,10 +28,7 @@ def main():
 
     aa.alias(["employee|project", "create"], "cr", "c")
     aa.alias(["*", "delete"], "del", "d")
-
     aa.parse()
-
-    # print("PARSED:", parsed)
 
     args = get_args()
     print(args)
