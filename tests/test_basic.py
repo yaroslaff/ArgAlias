@@ -41,6 +41,10 @@ def test_prefix0():
     parsed  = aa.parse(['sh', 'hello', 's'])
     assert parsed == ['show','hello', 's']
 
+    parsed  = aa.parse([])
+    assert parsed == []
+
+
 def test_prefix1():
     aa = ArgAlias()
     aa.alias(['p1', 'show'], 'sh', 's', 'get')
@@ -110,6 +114,7 @@ def test_prefix_pipe():
     # must be applied once
     parsed  = aa.parse(['aaa', 'sh', 'hello', 'sh'])
     assert parsed == ['aaa', 'show','hello', 'sh']
+
 
 def test_useless():
     # not really useful tests

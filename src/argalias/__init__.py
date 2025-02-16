@@ -117,10 +117,3 @@ class ArgAlias:
             sys.argv[1:] = args
         return args
 
-
-
-#aa = ArgAlias()
-#aa.alias("show", "get", "sh", "s")
-#aa.alias(["person", "create"],"cr", "c")
-#aa.alias(["project", "create"],"cr", "c")
-# nars = aa.parse(["person", "sh"])
