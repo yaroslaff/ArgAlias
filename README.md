@@ -1,7 +1,7 @@
 # ArgAlias
 Argument aliases for CLI utilities (and any argparse/typer/click/... or alternatives)
 
-This tool is for those who sometimes prefer to type 'p sh X' instead of 'project show X'.
+This tool is for those who sometimes prefer to type `p sh X` instead of `project show X`.
 
 You configure which *canonical* CLI arguments you expect, and what aliases are allowed (e.g. for the canonical argument "show" good aliases are "sh" and "get").
 
