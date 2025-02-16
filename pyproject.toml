@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "argalias"
 dynamic = ["version"]
-description = ''
+description = 'Argument aliases/abbrevations for CLI programs (compatible with argparse/click/typer/...)'
 readme = "README.md"
 requires-python = ">=3.7"
 license = "MIT"
