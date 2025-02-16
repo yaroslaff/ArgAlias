@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
-import argalias
+from argalias import ArgAlias
 import sys
 
 def get_args():
@@ -19,9 +19,8 @@ def get_args():
     return parser.parse_args()
 
 
-def main():
-
-    aa = argalias.ArgAlias()
+def resolve_aliases():
+    aa = ArgAlias()
     aa.alias("show", "get", "sh", "s")
     aa.alias(["employee"], "emp", "e")
     aa.alias(["project"], "proj", "p")
@@ -30,6 +29,9 @@ def main():
     aa.alias(["*", "delete"], "del", "d")
     aa.parse()
 
+def main():
+
+    resolve_aliases()
     args = get_args()
     print(args)
 

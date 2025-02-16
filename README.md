@@ -36,6 +36,8 @@ aa.parse()
 print(sys.argv)
 ~~~
 
+You can find examples using argparse, Click, and Typer in examples/.
+
 Results:
 ~~~
 p sh Something -> project show Something
