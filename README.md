@@ -1,5 +1,5 @@
 # ArgAlias
-Argument aliases for CLI utilities (and any argparse/typer/click/... or alternatives)
+Aliases for arguments in Python CLI utilities (supports argparse, Typer, Click, and similar tools).
 
 This tool is for those who sometimes prefer to type `p sh X` instead of `project show X`.
 
@@ -10,8 +10,9 @@ If a canonical name is configured with a prefix, aliases will be resolved only i
 *Simplify your CLI! Add ArgAlias to your argparse, Click, or Typer project in 10 minutes!*
 
 ## Installation
-
-`pip3 install argalias`
+~~~
+pip3 install argalias
+~~~
 
 ## How to use
 When you add aliases, the first element is either a `str` (the canonical name to which the alias will be resolved to) or a `List[str]` containing prefixes with canonical name.
