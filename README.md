@@ -36,7 +36,7 @@ aa.parse()
 print(sys.argv)
 ~~~
 
-You can find examples using argparse, Click, and Typer in examples/.
+You can find examples using [argparse](examples/argparse), [Click](/examples/click), and Typer in examples/.
 
 Results:
 ~~~
