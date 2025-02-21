@@ -2,16 +2,15 @@
 
 [![Run tests and upload coverage](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml/badge.svg)](https://github.com/yaroslaff/ArgAlias/actions/workflows/main.yml) [![codecov](https://codecov.io/gh/yaroslaff/ArgAlias/graph/badge.svg?token=3DUNW2SH81)](https://codecov.io/gh/yaroslaff/ArgAlias)
 
-
 Aliases for arguments in Python CLI utilities (supports argparse, Typer, Click, and similar tools).
 
-This tool is for those who sometimes prefer to type `p sh X` instead of `project show X`.
+This tool is for those who agree that `p sh X` is shorter then `project show X`.
 
 You configure which *canonical* CLI arguments you expect, and what aliases are allowed (e.g. for the canonical argument "show" good aliases are "sh" and "get").
 
 If a canonical name is configured with a prefix, aliases will be resolved only if they follow configured prefix from the first argument.
 
-*Simplify your CLI! Add ArgAlias to your argparse, Click, or Typer project in 10 minutes!*
+*Add aliases to your argparse, Click, or Typer project in 10 minutes!*
 
 ## Installation
 ~~~
@@ -45,6 +44,8 @@ aa.alias(["*", "delete"], "del", "d")
 aa.parse()
 # sys.argv now has all aliases resolved, e.g. "sh" resolved to "show"
 print(sys.argv)
+
+# now all aliases in sys.argv are resolved and you can do your argparse or click or typer parsing
 ~~~
 
 You can find examples using [argparse](examples/argparse), [Click](examples/click), and [Typer](examples/typer) in [examples/](examples/).
@@ -57,12 +58,28 @@ project cr Mayhem -> project create Mayhem
 
 These aliases will not be replaced:
 ~~~
-sh emp John ("sh" resolved to "show" but "emp" not resolved: not a first argument)
-zzz cr xxx ("cr" not resolved: not after employee or project)
-aaa bbb del ("del" not resolved: prefix is "aaa", "bbb" - two elements, not matching "*")
+sh emp John ("sh" resolved to "show" but "emp" will not be resolved: not a first argument)
+zzz cr xxx ("cr" will not be resolved: not after employee or project)
+aaa bbb del ("del" will not be resolved: prefix is "aaa", "bbb" - two elements, but "*" matches only one element)
 ~~~
 
 Might be replaced incorrectly:
 ~~~
 project create sh (You want to create a project named "sh", but "sh" will be replaced with "show" because the alias does not specify any prefix requirements.)
 ~~~
+
+## Optional arguments
+Optional arguments can make a problems while checking prefixes, e.g. "script.py -v p del X" will not match `["project"]` prefix, because first argument is "-v", not "p". Here `skip_flags()` and `nargs()` comes to help.  
+
+~~~
+# with skip_flags ArgAlias will ignore any unknown arguments starting with "-", e.g. "-v", or  "--some-option"
+aa.skip_flags()
+
+# this will ignore --xy 11 22 
+aa.nargs('--xy', nargs=2)
+
+# this will ginore --level 123 (default value for nargs is 1)
+aa.nargs('--level')
+~~~
+
+See [argparse_ex1.py](examples/argparse/argparse_ex1.py) for a real example. You do not need to use `skip_flags` or `nargs` for arguments which may be found after prefix (e.g. to "project show projectname -v"). It's needed only when optinal argument may 

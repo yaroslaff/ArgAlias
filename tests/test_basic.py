@@ -4,7 +4,7 @@ import sys
 def test_repr():
     aas = ArgAliasSubstitution('show', ('s', 'sh'), None)
     aas_repr = repr(aas)
-    assert aas_repr == "None show ('s', 'sh')"
+    assert aas_repr == "None ('s', 'sh') > 'show'"
 
 def test_argv():
     argv_backup = sys.argv
@@ -17,6 +17,7 @@ def test_argv():
 
 def test_anywhere():
     aa = ArgAlias()
+    aa.skip_flags()
     aa.alias('show', 'sh', 's', 'get')
 
     parsed  = aa.parse(['show', 'hello', 'world'])
@@ -25,11 +26,18 @@ def test_anywhere():
     parsed  = aa.parse(['sh', 'hello', 'world'])
     assert parsed == ['show','hello', 'world']
 
+    parsed  = aa.parse(['-v', 'sh', 'hello', 'world'])
+    assert parsed == ['-v', 'show','hello', 'world']
+
+    parsed  = aa.parse(['sh', '-v', 'hello', 'world'])
+    assert parsed == ['show', '-v', 'hello', 'world']
+
     parsed  = aa.parse(['sh', 'hello', 's'])
     assert parsed == ['show','hello', 'show']
 
 def test_prefix0():
     aa = ArgAlias()
+    aa.skip_flags()
     aa.alias(['show'], 'sh', 's', 'get')
 
     parsed  = aa.parse(['show', 'hello', 'world'])
@@ -38,11 +46,33 @@ def test_prefix0():
     parsed  = aa.parse(['sh', 'hello', 'world'])
     assert parsed == ['show','hello', 'world']
 
+    parsed  = aa.parse(['sh', '-v', 'hello', 'world'])
+    assert parsed == ['show', '-v','hello', 'world']
+
+    parsed  = aa.parse(['-v', 'sh', 'hello', 'world'])
+    assert parsed == ['-v', 'show', 'hello', 'world']
+
     parsed  = aa.parse(['sh', 'hello', 's'])
     assert parsed == ['show','hello', 's']
 
     parsed  = aa.parse([])
     assert parsed == []
+
+
+def test_nargs():
+    aa = ArgAlias()
+    aa.skip_flags()
+    aa.nargs('--level')
+    aa.nargs('--xy', nargs=2)
+    aa.alias(['show'], 'sh', 's', 'get')
+    parsed  = aa.parse(['sh', '--level', '123', 'hello', 'world'])
+    assert parsed == ['show', '--level', '123', 'hello', 'world']
+
+    parsed  = aa.parse(['sh', '--xy', '11', '22', 'hello', 'world'])
+    assert parsed == ['show', '--xy', '11', '22', 'hello', 'world']
+
+    parsed  = aa.parse(['sh', '--level', '123', '--xy', '11', '22', 'hello', 'world'])
+    assert parsed == ['show', '--level', '123', '--xy', '11', '22', 'hello', 'world']
 
 
 def test_prefix1():

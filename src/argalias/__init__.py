@@ -3,10 +3,9 @@ from .__about__ import __version__
 from typing import List, Tuple, Optional, Union
 import sys
 
-MAX_STAGE = 2
+
 
 class ArgAliasSubstitution:
-    stage: int #  processed first
     canonical: str # canonical name (e.g. "show")
     aliases: List[str] # aliases (e.g. ["sh", "s", "get"])
     prefix: List[List[str]] # prefixes (e.g. [["person"], ["project"]])
@@ -17,70 +16,66 @@ class ArgAliasSubstitution:
         self.canonical = canonical
         self.aliases = aliases
         self.prefix = prefix
-        self.stage = self.calculate_stage()
 
-
-    def calculate_stage(self):            
-        # No prefix - latest stage
-        if self.prefix is None:
-            return 2
-
-        if '*' in self.prefix:
-            return 1
-
-        return 0
-
-    def check_prefix_el(self, tpl: str, arg: str):
+    def check_prefix_el(self, arg: str, tpl: str) -> bool:
+        """ return true if arg matches tpl """
         if tpl == '*':
             return True
         for pelem in tpl.split('|'):
             if pelem.strip() == arg:
                 return True
         return False
-
-    def match(self, args: List[str]):
-        """ check if args matches this substitution """
-        if self.prefix is None:
-            return any(al in args for al in self.aliases)
-
-        # prefix is given (maybe empty list)
-        for p, arg in zip(self.prefix, args):
-            if not self.check_prefix_el(p, arg):
-                return False
-        
-        # is alias found after prefix in args?
-        # print("retany", self.canonical, self.aliases, args)
-        # print("prefix:", self.prefix)
-        
-        if len(self.prefix) >= len(args):
-            return False
-
-        return any(al in args[len(self.prefix)] for al in self.aliases)
             
+    def iterate_args(self, args: List[str], skip_flags=False, nargs: dict = dict()):
+        skip_next = 0
+        for idx, arg in enumerate(args):
+            if skip_next > 0:
+                # skip this arg, it's argument to option
+                skip_next -= 1
+                continue
 
-    def parse(self, args: List[str]) -> List[str]:
+            if arg in nargs:
+                skip_next = nargs[arg]
+                continue
+
+            if skip_flags and arg.startswith('-'):
+                continue
+            yield idx, arg
+
+    def parse(self, args: List[str], skip_flags=False, nargs: dict = dict()) -> List[str]:
         """ return parsed args (with this substitution applied) """
-        if not self.match(args):
-            return args
-
-        # match! now we will replace
+        
+        # if prefix not needed, just replace all occurences (if any)
         if self.prefix is None:
             # no prefix, replace all occurences
 
-            def replace_arg(arg):
-                return self.canonical if arg in self.aliases else arg
-
-            args = [ replace_arg(arg) for arg in args ]
+            args = [ self.canonical if arg in self.aliases else arg for arg in args ]
             return args
 
-        # prefix is given
-        args[len(self.prefix)] = self.canonical
+        args_filtered = list(self.iterate_args(args, skip_flags=skip_flags, nargs=nargs))
+
+        # prefix is given                
+        for  arg, prefix in zip(args_filtered, self.prefix):
+            if not self.check_prefix_el(arg[1], prefix):
+                return args
+            
+
+        # prefix is ok, check aliases
+        try:
+            arg_idx = args_filtered[len(self.prefix)][0]
+            arg_name = args_filtered[len(self.prefix)][1]
+        except IndexError:
+            # nothing to replace: no args after prefix or no args at all
+            return args
+
+        if arg_name in self.aliases:
+            args[arg_idx] = self.canonical
 
         return args
 
 
     def __repr__(self):
-        return(f"{self.prefix!r} {self.canonical} {self.aliases!r}")
+        return(f"{self.prefix!r} {self.aliases!r} > {self.canonical!r}")
 
 
 class ArgAlias:
@@ -88,7 +83,16 @@ class ArgAlias:
 
     def __init__(self):
         self.substitutions = list()
+        self._skip_flags = False
+        self._nargs = dict()
 
+    def skip_flags(self, skip: bool = True):
+        self._skip_flags = skip
+
+    def nargs(self, name: str, nargs: int = 1):
+        """ let argalias know about option which accepts arguments """
+        self._nargs[name] = nargs
+        
     def alias(self, name: Union[str, List[str]], *aliases: List[str]):
         if isinstance(name, str):
             canonical = name
@@ -108,10 +112,9 @@ class ArgAlias:
             args = sys.argv[1:]
             position = 1
 
-        for stage in range(MAX_STAGE + 1):
-            for s in self.substitutions:
-                if s.stage == stage:
-                    args = s.parse(args)
+
+        for s in self.substitutions:
+            args = s.parse(args, skip_flags=self._skip_flags, nargs=self._nargs)
 
         if argv_mode:
             sys.argv[1:] = args
