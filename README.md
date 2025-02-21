@@ -71,7 +71,7 @@ project create sh (You want to create a project named "sh", but "sh" will be rep
 ## Optional arguments
 Optional arguments can make a problems while checking prefixes, e.g. `script.py -v p del X` will not match `["project"]` prefix, because first argument is "-v", not "p". Here `skip_flags()` and `nargs()` comes to help.  
 
-~~~
+~~~python
 # with skip_flags ArgAlias will ignore any unknown arguments starting with "-", e.g. "-v", or  "--some-option"
 aa.skip_flags()
 
