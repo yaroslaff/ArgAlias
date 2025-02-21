@@ -69,7 +69,7 @@ project create sh (You want to create a project named "sh", but "sh" will be rep
 ~~~
 
 ## Optional arguments
-Optional arguments can make a problems while checking prefixes, e.g. "script.py -v p del X" will not match `["project"]` prefix, because first argument is "-v", not "p". Here `skip_flags()` and `nargs()` comes to help.  
+Optional arguments can make a problems while checking prefixes, e.g. `script.py -v p del X` will not match `["project"]` prefix, because first argument is "-v", not "p". Here `skip_flags()` and `nargs()` comes to help.  
 
 ~~~
 # with skip_flags ArgAlias will ignore any unknown arguments starting with "-", e.g. "-v", or  "--some-option"
@@ -82,4 +82,7 @@ aa.nargs('--xy', nargs=2)
 aa.nargs('--level')
 ~~~
 
-See [argparse_ex1.py](examples/argparse/argparse_ex1.py) for a real example. You do not need to use `skip_flags` or `nargs` for arguments which may be found after prefix (e.g. to "project show projectname -v"). It's needed only when optinal argument may 
+See [argparse_ex1.py](examples/argparse/argparse_ex1.py) for a real example. You do not need to use `skip_flags` or `nargs`:
+1. If you replace parameter anywhere in args (like "show" in example above), not using prefix.
+2. If options will go after alias (e.g. `script.py project del X --verbose`)
+
