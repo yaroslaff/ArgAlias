@@ -35,6 +35,15 @@ def test_anywhere():
     parsed  = aa.parse(['sh', 'hello', 's'])
     assert parsed == ['show','hello', 'show']
 
+def test_alias_str():
+    aa = ArgAlias()
+    aa.skip_flags()
+    aa.alias('sh', 'show')
+
+    parsed  = aa.parse(['sh', 'hello', 'world'])
+    assert parsed == ['show','hello', 'world']
+
+
 def test_prefix0():
     aa = ArgAlias()
     aa.skip_flags()

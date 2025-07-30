@@ -106,7 +106,7 @@ class ArgAlias:
         """ let argalias know about option which accepts arguments """
         self._nargs[name] = nargs
         
-    def alias(self, aliases: List[str], canonical: Union[str, List[str]], prefix: List[str] | str | None = None):
+    def alias(self, aliases: Union[str, List[str]], canonical: Union[str, List[str]], prefix: List[str] | str | None = None):
 
         """
             aliases: list of aliases, e.g. ["sh", "s", "get"]
@@ -120,10 +120,14 @@ class ArgAlias:
         """
 
 
+        # sugar for alias
+        if isinstance(aliases, str):
+            aliases = list([aliases])
+
         # sugar for canonical
         if isinstance(canonical, str):
             canonical = list([canonical])
-        
+
         # sugar for prefix
         if prefix is None:
             prefix = list()

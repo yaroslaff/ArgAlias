@@ -35,6 +35,9 @@ aa.alias(["emp", "e"], "employee")
 # same for "project"
 aa.alias(["proj", "p"], "project")
 
+# or even simpler (if only one alias)
+aa.alias("p", "project")
+
 # The script expects "show" parameter anywhere, and it can be aliased as "sh", "s" or even "get"
 # Be careful with '**' because: script.py sh character sh holmes 
 # will be (possible wrongly) translated to: script.py show character show holmes 
