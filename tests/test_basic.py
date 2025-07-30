@@ -2,15 +2,15 @@ from argalias import ArgAlias, ArgAliasSubstitution, __version__
 import sys
 
 def test_repr():
-    aas = ArgAliasSubstitution('show', ('s', 'sh'), None)
+    aas = ArgAliasSubstitution(['show'], ['s', 'sh'], None)
     aas_repr = repr(aas)
-    assert aas_repr == "None ('s', 'sh') > 'show'"
+    assert aas_repr == "None ['s', 'sh'] > ['show']"
 
 def test_argv():
     argv_backup = sys.argv
     sys.argv = ['script.py', 'sh', 'something']    
     aa = ArgAlias()
-    aa.alias('show', 'sh',)
+    aa.alias(['sh'], 'show')
     parsed = aa.parse()
     assert sys.argv == ['script.py', 'show', 'something']
     sys.argv = argv_backup
@@ -18,7 +18,7 @@ def test_argv():
 def test_anywhere():
     aa = ArgAlias()
     aa.skip_flags()
-    aa.alias('show', 'sh', 's', 'get')
+    aa.alias(['sh', 's', 'get'], 'show', prefix='**')
 
     parsed  = aa.parse(['show', 'hello', 'world'])
     assert parsed == ['show','hello', 'world']
@@ -38,7 +38,7 @@ def test_anywhere():
 def test_prefix0():
     aa = ArgAlias()
     aa.skip_flags()
-    aa.alias(['show'], 'sh', 's', 'get')
+    aa.alias(['sh', 's', 'get'], ["show"])
 
     parsed  = aa.parse(['show', 'hello', 'world'])
     assert parsed == ['show','hello', 'world']
@@ -64,7 +64,7 @@ def test_nargs():
     aa.skip_flags()
     aa.nargs('--level')
     aa.nargs('--xy', nargs=2)
-    aa.alias(['show'], 'sh', 's', 'get')
+    aa.alias(['sh', 's', 'get'], ['show'])
     parsed  = aa.parse(['sh', '--level', '123', 'hello', 'world'])
     assert parsed == ['show', '--level', '123', 'hello', 'world']
 
@@ -77,37 +77,37 @@ def test_nargs():
 
 def test_prefix1():
     aa = ArgAlias()
-    aa.alias(['p1', 'show'], 'sh', 's', 'get')
+    aa.alias(['sh', 's', 'get'], ['show'], prefix=['section'])
 
     parsed  = aa.parse(['show', 'hello', 'world'])
     assert parsed == ['show','hello', 'world']
 
-    parsed  = aa.parse(['p1', 'sh', 'hello', 'world'])
-    assert parsed == ['p1', 'show','hello', 'world']
+    parsed  = aa.parse(['section', 'sh', 'hello', 'world'])
+    assert parsed == ['section', 'show','hello', 'world']
 
-    parsed  = aa.parse(['p1', 'sh', 'hello', 's'])
-    assert parsed == ['p1', 'show','hello', 's']
+    parsed  = aa.parse(['section', 'sh', 'hello', 's'])
+    assert parsed == ['section', 'show','hello', 's']
 
 
 def test_prefix2():
     aa = ArgAlias()
-    aa.alias(['p1', 'p2', 'show'], 'sh', 's', 'get')
+    aa.alias(['sh', 's', 'get'], 'show', prefix=['section', 'subsection'])
 
     # must not be applied
     parsed  = aa.parse(['show', 'hello', 'world'])
     assert parsed == ['show','hello', 'world']
 
     # must be applied
-    parsed  = aa.parse(['p1', 'p2', 'sh', 'hello', 'world'])
-    assert parsed == ['p1', 'p2', 'show','hello', 'world']
+    parsed  = aa.parse(['section', 'subsection', 'sh', 'hello', 'world'])
+    assert parsed == ['section', 'subsection', 'show','hello', 'world']
 
     # must be applied once
-    parsed  = aa.parse(['p1', 'p2', 'sh', 'hello', 'sh'])
-    assert parsed == ['p1', 'p2', 'show','hello', 'sh']
+    parsed  = aa.parse(['section', 'subsection', 'sh', 'hello', 'sh'])
+    assert parsed == ['section', 'subsection', 'show','hello', 'sh']
 
 def test_prefix_asterisk():
     aa = ArgAlias()
-    aa.alias(['*', 'show'], 'sh', 's', 'get')
+    aa.alias(['sh', 's', 'get'], ['show'], prefix='*')
 
     # must not be applied
     parsed  = aa.parse(['show', 'hello', 'world'])
@@ -123,7 +123,7 @@ def test_prefix_asterisk():
 
 def test_prefix_pipe():
     aa = ArgAlias()
-    aa.alias(['aaa | bbb', 'show'], 'sh', 's', 'get')
+    aa.alias(['sh', 's', 'get'], ['show'], prefix=['aaa | bbb'])
 
     # must not be applied
     parsed  = aa.parse(['show', 'hello', 'world'])

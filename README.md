@@ -22,25 +22,32 @@ When you add aliases, the first element is either a `str` (the canonical name to
 
 Each element in the prefix list can be either a simple string (a parameter), `*` (matches any value of parameter) or values separated by the `|` symbol.
 
+`alias` is main method, it expects 3 arguments: list of aliases, canonical namd and prefix (default: None, which means alias will be applied to first argument)
+
 ~~~python
 from argalias import ArgAlias
 
 aa = ArgAlias()
 
-# The script expects "show" parameter anywhere, and it can be aliased as "sh", "s" or even "get"
-aa.alias("show", "get", "sh", "s")
-
 # The script expects "employee" as the first parameter, can be aliased as "emp" or "e" 
-aa.alias(["employee"], "emp", "e")
+aa.alias(["emp", "e"], "employee")
 
 # same for "project"
-aa.alias(["project"], "proj", "p")
+aa.alias(["proj", "p"], "project")
+
+# The script expects "show" parameter anywhere, and it can be aliased as "sh", "s" or even "get"
+# Be careful with '**' because: script.py sh character sh holmes 
+# will be (possible wrongly) translated to: script.py show character show holmes 
+aa.alias(['sh', 's', 'get'], "show", prefix="**")
+
 
 # The script expects "create" parameter after "employee" or "project". Can be aliased as "cr" or "c"
-aa.alias(["employee|project", "create"], "cr", "c")
+# Note: this rule should go AFTER p=project and e=employee rules, otherwise real prefix "p" will not match required prefix "project"
+aa.alias(["cr", "c"], "create", prefix=["employee|project"])
 
 # The script expects "delete" as the second parameter after any parameter, can be aliased as "del" or "d"
-aa.alias(["*", "delete"], "del", "d")
+# pr del X, employee d X and even anything d X will work.
+aa.alias(["del", "d"], "delete", prefix="*")
 aa.parse()
 # sys.argv now has all aliases resolved, e.g. "sh" resolved to "show"
 print(sys.argv)
@@ -82,7 +89,17 @@ aa.nargs('--xy', nargs=2)
 aa.nargs('--level')
 ~~~
 
+## Replacing alias to many words
+You can replace alias into many words, just assign `canonical` a list.
+
+~~~python
+aa.alias(["ml", "mls"], ["metrics", "list"])
+~~~
+
+now `script.py ml` will be replaced to `script.py metrics list`
+
+
 See [argparse_ex1.py](examples/argparse/argparse_ex1.py) for a real example. You do not need to use `skip_flags` or `nargs`:
 1. If you replace parameter anywhere in args (like "show" in example above), not using prefix.
 2. If options will go after alias (e.g. `script.py project del X --verbose`)
-
+3. If you do not use options at all (e.g. no `-v` or `--verbose` or `--level DEBUG`)

@@ -16,16 +16,17 @@ def project(command: str, name: str):
     "Manage projects"
     common_handler("project", command, name)
 
-
 def resolve_aliases():
     aa = ArgAlias()
-    aa.alias("show", "get", "sh", "s")
-    aa.alias(["employee"], "emp", "e")
-    aa.alias(["project"], "proj", "p")
+    aa.alias(["get", "sh", "s"], "show", prefix="*")
+    aa.alias(["emp", "e"], "employee")
+    aa.alias(["proj", "p", "pr"], "project")
 
-    aa.alias(["employee|project", "create"], "cr", "c")
-    aa.alias(["*", "delete"], "del", "d")
+    aa.alias(["cr", "c"], "create", prefix=["employee|project"])
+    aa.alias(["del", "d"], ["delete"], prefix="**")
+
     aa.parse()
+
 
 if __name__ == "__main__":
     resolve_aliases()
